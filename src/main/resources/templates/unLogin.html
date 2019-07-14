@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>找回密码</title>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/styles/main.css" rel="stylesheet" />
+    <script src="https://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/scripts/md5.js"></script>
+</head>
+<body>
+<!-- particles.js container -->
+<div id="particles-js"></div>
+
+<div class="index-main" style="position: relative;width: 800px;height: 600px;top:100px;">
+    <div class="index-main-body" style="position:absolute;width: 600px;border:2px solid #f4f4f4;top: 20px;background-color: rgba(80,200,126,0.1)" >
+        <h1 class="logo hide-text" style="text-align: center;padding-top: 20px">知否问答</h1>
+        <div class="index-header">
+            <h1 class="subtitle" style="margin:50px 20px;color: #00B091;font-size: 20px;text-align: left"><span class="glyphicon glyphicon-cog"></span>请按以下步骤找回密码:</h1>
+        </div>
+        <div class="desk-front sign-flow" style="position:absolute;">
+            <div class="index-tab-navs" style="position:absolute;width:310px;left: 80px;">
+                <div class="navs-slider" data-active-index="$!{index}">
+                    <a href="#register" id="register" style="display: inline-block;width:150px;margin-right: 15px">①账号绑定的邮箱</a>
+                    <a href="#login" id="login" style="display: inline-block;width:120px;margin-left: 15px">②输入验证码</a>
+                </div>
+            </div>
+            <!-- 步骤一-->
+            <div  class="view view-register" style="display: block;position: absolute;top: 100px;left: 100px">
+                <form class="register-form" id="sign-form-1" method="POST">
+                    <div class="group-inputs">
+                        <div class="email input-wrapper" style="position:relative;">
+                            <input id="myEmail" name="email" required="required" class="email" placeholder="请输入注册账号时绑定邮箱" type="text" value='$!{email}'>
+                            <div class="msg" style="color: red; position:absolute;z-index: 8;right: 5px;top: 10px;display: none">$!{msg}</div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- 步骤二-->
+            <div class="view view-login" style="display: none;position: absolute;top: 100px;left: 100px">
+                <form  class="login-form" method="POST">
+                    <div class="group-inputs">
+                        <!--验证码-->
+                        <div class="input-wrapper captcha-module" data-type="en" style="display: block;">
+                            <input id="captcha" name="captcha" placeholder="验证码" required="required" data-rule-required="true" data-msg-required="请填写验证码">
+                            <div class="msg" style="color: red; position:absolute;z-index: 8;right: 5px;top: 10px;display: none">$!{msg}</div>
+                            <div class="captcha-container">
+                                <img class="js-refreshCaptcha captcha" width="120" height="30" data-tooltip="s$t$看不清楚？换一张"
+                                     alt="验证码" data-toggle="tooltip" title="看不清楚？换一张" style="display: block;"
+                                     src="/getCaptcha" onclick="getCaptcha()">
+                            </div>
+                        </div>
+                    </div>
+                    <input class="email-hidden" type="hidden" name="email" type="text">
+                    <div class="button-wrapper command">
+                        <button class="sign-button" id="login-btn" type="button">确认</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/scripts/particles.js"></script>
+<script src="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/scripts/particles-app.js"></script>
+<script>
+    function getCaptcha() {
+        var source = '/getCaptcha?d=' + Math.random();
+        $('.register-form .captcha').attr("src", source);
+        $('.login-form .captcha').attr("src", source);
+    }
+    $('#register').click(function(){
+        $('.view-register').css('display','block');
+        $('.view-login').css('display','none');
+    });
+    $('#login').click(function(){
+        $('.view-login').css('display','block');
+        $('.view-register').css('display','none');
+    });
+    //注册
+    $('#myEmail').blur(function() {
+        //简单判断
+        var email = $('.register-form .email input').val();       //获取输入的邮箱
+        var emailReg = /^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/;
+        if(!emailReg.test(email))
+        {
+            $('.register-form .group-inputs .email .msg').html("请输入有效的邮箱");
+            $('.register-form .group-inputs .email .msg').css('display', 'block');
+            return;
+        }
+        //放入隐藏域 email-hidden中，为了在确认的时候把值提交到服务端
+        $('.email-hidden').val(email);
+    });
+    //重置密码
+    $('#login-btn').click(function() {
+        // 使用ajax异步处理
+       /* $('.login-form').submit();*/
+        var data = $('.login-form').serialize();
+        $.ajax({
+                url: "/reset_password",
+                type: "POST",
+                data: data,
+                async:true,
+                success:function (data) {
+                    if(data === "OK"){
+                        alert("重置密码成功");
+                        window.location.href = "/reglogin#login";
+                        return;
+                    }
+                    alert(data);
+                },
+            error:function () {
+                alert("服务器异常，请重新操作");
+            }
+        });
+    });
+
+    // 登录时错误信息隐藏与否
+    $('.login-form .captcha-module').click(function () {
+        if($('.login-form .group-inputs .captcha-module .msg').css('display') == 'block'){
+            $('.login-form .group-inputs .captcha-module .msg').css('display', 'none');
+        }
+    });
+    // 注册时错误信息隐藏与否
+    $('.register-form .email').click(function () {
+        if($('.register-form .group-inputs .email .msg').css('display') == 'block'){
+            $('.register-form .group-inputs .email .msg').css('display', 'none');
+        }
+    });
+
+    $(function(){
+        var index = '$!{index}';
+        var msg = '$!{msg}';
+        if(index == 0) {
+            $('.view-register').css('display','block');
+            $('.view-login').css('display','none');
+            $('.navs-slider').attr("data-active-index", 0);
+            if (msg.indexOf('用户名') > -1) {
+                $('.register-form .group-inputs .name .msg').css('display', 'block');
+            } else if (msg.indexOf('密码') > -1) {
+                $('.register-form .group-inputs .password .msg').css('display', 'block');
+            } else if (msg.indexOf('电话') > -1) {
+                $('.register-form .group-inputs .email .msg').css('display', 'block');
+            } else if (msg.indexOf('验证码') > -1) {
+                $('.register-form .group-inputs .captcha-module .msg').css('display', 'block');
+            } else if (msg.indexOf('服务器') > -1) {
+                $('.register-form .group-inputs .name .msg').css('display', 'block');
+            }
+        }else if(index == 1) {
+            $('.view-login').css('display','block');
+            $('.view-register').css('display','none');
+            $('.navs-slider').attr("data-active-index", 1);
+            if (msg.indexOf('账号') > -1) {
+                $('.login-form .group-inputs .account .msg').css('display', 'block');
+            } else if (msg.indexOf('密码') > -1) {
+                $('.login-form .group-inputs .verification .msg').css('display', 'block');
+            } else if (msg.indexOf('验证码') > -1) {
+                $('.login-form .group-inputs .captcha-module .msg').css('display', 'block');
+            } else if (msg.indexOf('服务器') > -1) {
+                $('.login-form .group-inputs .account .msg').css('display', 'block');
+            }
+        }
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.know.wenda.dao.mapper.MessageMapper">
+
+    <!-- 创建数据库与实体类字段对应关系 -->
+    <resultMap id="BaseResultMap" type="com.know.wenda.domain.MessageDO">
+        <id column="id" property="id"/>
+        <result column="from_id" property="fromId"/>
+        <result column="to_id" property="toId"/>
+        <result column="content" property="content"/>
+        <result column="has_read" property="hasRead"/>
+        <result column="conversation_id" property="conversationId"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="is_valid" property="isValid"/>
+        <result column="last_ver" property="lastVer"/>
+    </resultMap>
+
+    <!-- 公共基础SQL -->
+    <sql id="Base_Column_List">
+			id ,
+		    from_id,
+		    to_id,
+			content,
+			has_read ,
+			conversation_id,
+			create_date ,
+			update_date ,
+			is_valid,
+			last_ver
+    </sql>
+
+    <sql id="Base_Column_List_except_id">
+            from_id,
+		    to_id,
+			content,
+			has_read ,
+			conversation_id,
+			create_date ,
+			update_date ,
+			is_valid,
+			last_ver
+    </sql>
+
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="MessageDO" useGeneratedKeys="true" keyProperty="id">
+        insert into message(
+        <include refid="Base_Column_List_except_id"/>
+        ) values(
+        #{fromId} ,
+        #{toId},
+        #{content},
+        #{hasRead},
+        #{conversationId},
+        #{createDate} ,
+        #{updateDate} ,
+        #{isValid},
+        #{lastVer}
+        )
+    </insert>
+
+    <!-- 根据主键id查询-->
+    <!-- 注意这里：MessageDO中的id用来存储用户的会话数量 -->
+    <select id="getConversationDetail" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select
+        <include refid="Base_Column_List"/>
+        from message
+        where conversation_id = #{conversationId} and is_valid = 1
+        order by create_date desc
+        limit #{offset},#{limit}
+    </select>
+
+    <!--查询和用户相关的会话信息，和不同人的会话只取最新的一条。但取出和每个人一共多少条会话。并且，对会话进行从新到旧排序-->
+    <select id="getConversationList" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select
+        count(id) as id,
+        <include refid="Base_Column_List_except_id"/>
+        from (
+        select * from message where (from_id=#{userId} or to_id=#{userId}) and is_valid = 1
+        order by create_date desc
+        ) tt group by conversation_id
+        order by create_date desc
+        limit #{offset},#{limit}
+    </select>
+
+
+    <!-- 一次对话对两个人有效，需要两个参数：
+       1.  会话的id
+       2.   会话的一方，这里是to_id 是当前用户，表示是别人发给自己的。
+      -->
+    <!--查询数量-->
+    <select id="getConversationUnreadCount"  parameterType="java.util.Map" resultType="java.lang.Integer">
+        select
+        count(id)
+        from message
+        where has_read = 0 and to_id = #{userId} and conversation_id = #{conversationId}
+        and is_valid = 1
+    </select>
+
+    <!-- 修改未读为已读 -->
+    <update id="updateReadStatusByToId">
+        update message
+        set has_read = 1 and is_valid = 1
+        where to_id = #{userId} and conversation_id = #{conversationId}
+    </update>
+
+    <!-- 软删除会话信息列表 -->
+    <update id="deleteConversation">
+        update message
+        set is_valid = 0
+        where to_id = #{userId} and conversation_id = #{conversationId}
+    </update>
+    <!-- 删除会话中某条详情信息-->
+    <update id="deleteDetailConversationById" parameterType="java.lang.Integer">
+         update message
+        set is_valid = 0
+        where id=#{id}
+    </update>
+
+</mapper>

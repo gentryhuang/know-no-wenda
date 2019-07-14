@@ -1,0 +1,48 @@
+#parse("header.html")
+<link rel="stylesheet" media="all" href="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/styles/letter.css">
+    <div id="main">
+        <div class="zg-wrap zu-main clearfix ">
+            <ul class="letter-list">
+                #foreach($conversation in $conversations)
+                <li id="conversation-item-10005_622873">
+                    <a class="letter-link" href="/msg/detail?conversationId=$!{conversation.messageDO.conversationId}"></a>
+                    <div class="letter-info">
+                        <span class="l-time">$date.format('yyyy-MM-dd HH:mm:ss', $conversation.messageDO.createDate)</span>
+                        <div class="l-operate-bar">
+                            <a href="/deleteConversation?conversationId=$!{conversation.messageDO.conversationId}" class="sns-action-del" data-id="10005_622873">
+                            删除
+                            </a>
+                            <span> | </span>
+                            <a href="/msg/detail?conversationId=$!{conversation.messageDO.conversationId}">
+                                共$!{conversation.messageDO.id}条会话
+                            </a>
+                        </div>
+                    </div>
+                    <div class="chat-headbox">
+                        <span class="msg-num">
+                            $!{conversation.unread}
+                        </span>
+                        <a class="list-head">
+                            <img alt="头像" src="$!{conversation.userDO.headUrl}">
+                        </a>
+                    </div>
+                    <div class="letter-detail">
+                        #if($conversation.userDO.id)
+                        <a href="/user/$!{conversation.userDO.id}" title="通知" class="letter-name level-color-1">
+                            $!{conversation.userDO.name}
+                        </a>
+                        #else
+                        #end
+                        <p class="letter-brief">
+                            ${conversation.messageDO.content}
+                        </p>
+                    </div>
+                </li>
+                #end
+                </ul>
+
+        </div>
+    </div>
+#parse("common.html")
+<script type="text/javascript" src="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/scripts/detail.js"></script>
+#parse("footer.html")

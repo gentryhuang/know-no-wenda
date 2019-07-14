@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>知乎问答</title>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/styles/main.css" rel="stylesheet" />
+    <script src="https://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/scripts/md5.js"></script>
+</head>
+<body>
+<!-- particles.js container -->
+<div id="particles-js"></div>
+
+<!-- scripts -->
+
+<div class="index-main">
+    <div class="index-main-body">
+        <div class="index-header">
+            <h1 class="logo hide-text">知否问答</h1>
+            <h2 class="subtitle">与世界分享你的知识、经验和见解</h2>
+        </div>
+        <div class="desk-front sign-flow">
+            <div class="index-tab-navs">
+                <div class="navs-slider" data-active-index="$!{index}">
+                    <a href="#register" id="register">注册</a>
+                    <a href="#login" id="login">登录</a>
+                    <span class="navs-slider-bar"></span>
+                </div>
+            </div>
+
+                <div class="view view-login" style="display: none;">
+                    <form  class="login-form" method="POST" action="/login">
+                        <div class="group-inputs">
+                            <!--隐藏域-->
+                            <input class="password-hidden" type="hidden" name="password" type="text">
+                            <div class="account input-wrapper">
+                                <input name="account" placeholder="用户名或邮箱" required="required" type="text" value='$!{account}'>
+                                <div class="msg" style="color: red; position:absolute;z-index: 8;right: 5px;top: 10px;display: none">$!{msg}</div>
+                            </div>
+                            <div class="verification input-wrapper">
+                                <input placeholder="密码" required="required" type="password">
+                                <div class="msg" style="color: red; position:absolute;z-index: 8;right: 5px;top: 10px;display: none">$!{msg}</div>
+                            </div>
+                            <!--验证码-->
+                            <div class="input-wrapper captcha-module" data-type="en" style="display: block;">
+                                <input id="captcha" name="captcha" placeholder="验证码" required="required" data-rule-required="true" data-msg-required="请填写验证码">
+                                <div class="msg" style="color: red; position:absolute;z-index: 8;right: 5px;top: 10px;display: none">$!{msg}</div>
+                                <div class="captcha-container">
+                                    <img class="js-refreshCaptcha captcha" width="120" height="30" data-tooltip="s$t$看不清楚？换一张"
+                                         alt="验证码" data-toggle="tooltip" title="看不清楚？换一张" style="display: block;"
+                                         src="/getCaptcha" onclick="getCaptcha()">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="button-wrapper command">
+                            <button class="sign-button submit" id="login-btn" type="button">登录</button>
+                        </div>
+                        <div class="signin-misc-wrapper clearfix">
+                            <label  class="signin-switch-button">
+                                <input type="checkbox" name="remember" checked="" value="true"> 记住我
+                            </label>
+                            <a class="unable-login" href="/unlogin">无法登录？</a>
+                        </div>
+                    </form>
+                </div>
+
+                    <div  class="view view-register" style="display: block;">
+                        <form class="register-form" action="/register" id="sign-form-1" method="POST">
+                            <div class="group-inputs">
+                                <!--隐藏域-->
+                                <input class="password-hidden" type="hidden" name="password" type="text">
+                                <div class="name input-wrapper" style="position:relative;">
+                                    <input name="username" required="required" placeholder="用户名" type="text" value='$!{username}'>
+                                    <div class="msg" style="color: red; position:absolute;z-index: 8;right: 5px;top: 10px;display: none">$!{msg}</div>
+                                </div>
+                                <div class="email input-wrapper" style="position:relative;">
+                                    <input name="email" required="required" class="account" placeholder="邮箱" type="text" value='$!{email}'>
+                                    <div class="msg" style="color: red; position:absolute;z-index: 8;right: 5px;top: 10px;display: none">$!{msg}</div>
+                                </div>
+                                <div class="password input-wrapper" style="position:relative;">
+                                    <input required="required" placeholder="密码（不少于 6 位）" type="password" value="">
+                                    <div class="msg" style="color: red; position:absolute;z-index: 8;right: 5px;top: 10px;display: none">$!{msg}</div>
+                                </div>
+                                <!--验证码-->
+                                <div class="input-wrapper captcha-module" style="position:relative;">
+                                    <input name="captcha" id="captcha" placeholder="验证码" required="required" data-rule-required="true" value =''>
+                                    <div class="msg" style="color: red; position:absolute;z-index: 8;right: 5px;top: 10px;display: none">$!{msg}</div>
+                                    <div class="captcha-container">
+                                        <img class="js-refreshCaptcha captcha" width="120" height="30"
+                                             alt="验证码" data-toggle="tooltip" title="看不清楚？换一张"
+                                             src="/getCaptcha" onclick="getCaptcha()">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="button-wrapper command">
+                                <button class="sign-button submit" id="register-btn" type="button">注册知否</button>
+                            </div>
+                        </form>
+                        <p class="agreement-tip">点击「注册」按钮，即代表你同意《知乎问答协议》</p>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <script src="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/scripts/particles.js"></script>
+        <script src="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/scripts/particles-app.js"></script>
+        <script>
+            function getCaptcha() {
+                var source = '/getCaptcha?d=' + Math.random();
+                $('.register-form .captcha').attr("src", source);
+                $('.login-form .captcha').attr("src", source);
+            }
+
+            $('#register').click(function(){
+                $('.view-register').css('display','block');
+                $('.view-login').css('display','none');
+                $('.navs-slider').attr("data-active-index", 0);
+            });
+            $('#login').click(function(){
+                $('.view-login').css('display','block');
+                $('.view-register').css('display','none');
+                $('.navs-slider').attr("data-active-index", 1);
+            });
+            //注册
+            $('#register-btn').click(function() {
+                //简单判断
+                var email = $('.register-form .email input').val();       //获取输入的邮箱
+                var emailReg = /^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/;
+                if(!emailReg.test(email))
+                {
+                    $('.register-form .group-inputs .email .msg').html("请输入有效的邮箱");
+                    $('.register-form .group-inputs .email .msg').css('display', 'block');
+                    return;
+                }
+                var password = $('.register-form .password input').val();       //获取输入的password
+                if(password.length < 6){
+                    $('.register-form .group-inputs .password .msg').html("密码少于6位");
+                    $('.register-form .group-inputs .password .msg').css('display', 'block');
+                    return;
+                }
+             /*   $('.register-form .password-hidden').val(md5(password));        //md5后放入隐藏域*/
+                $('.register-form .password-hidden').val(password);        //放入隐藏域
+                $('.register-form').submit();
+            });
+            //登录
+            $('#login-btn').click(function() {
+                var password = $('.login-form .verification input').val();
+                // 使用md5对输入的密码加密，这还是前端加密
+               /* $('.login-form .password-hidden').val(md5(password));*/
+                $('.login-form .password-hidden').val(password);
+                $('.login-form').submit();
+            });
+
+            // 登录时错误信息隐藏与否
+            $('.login-form .account').click(function () {
+                if($('.login-form .group-inputs .account .msg').css('display') == 'block'){
+                    $('.login-form .group-inputs .account .msg').css('display', 'none');
+                }
+            });
+            $('.login-form .password').click(function () {
+                if($('.login-form .group-inputs .password .msg').css('display') == 'block'){
+                    $('.login-form .group-inputs .password .msg').css('display', 'none');
+                }
+            });
+
+            $('.login-form .captcha-module').click(function () {
+                if($('.login-form .group-inputs .captcha-module .msg').css('display') == 'block'){
+                    $('.login-form .group-inputs .captcha-module .msg').css('display', 'none');
+                }
+            });
+            // 注册时错误信息隐藏与否
+            $('.register-form .name').click(function () {
+                if($('.register-form .group-inputs .name .msg').css('display') == 'block'){
+                    $('.register-form .group-inputs .name .msg').css('display', 'none');
+                }
+            });
+            $('.register-form .password').click(function () {
+                if($('.register-form .group-inputs .password .msg').css('display') == 'block'){
+                    $('.register-form .group-inputs .password .msg').css('display', 'none');
+                }
+            });
+            $('.register-form .email').click(function () {
+                if($('.register-form .group-inputs .email .msg').css('display') == 'block'){
+                    $('.register-form .group-inputs .email .msg').css('display', 'none');
+                }
+            });
+            $('.register-form .captcha-module').click(function () {
+                if($('.register-form .group-inputs .captcha-module .msg').css('display') == 'block'){
+                    $('.register-form .group-inputs .captcha-module .msg').css('display', 'none');
+                }
+            });
+
+            $(function(){
+                var index = '$!{index}';
+                var msg = '$!{msg}';
+                if(index == 0) {
+                    $('.view-register').css('display','block');
+                    $('.view-login').css('display','none');
+                    $('.navs-slider').attr("data-active-index", 0);
+                    // 根据服务端返回的msg对应的值包包含关键字段判断，给出对应的错误提示
+                    if (msg.indexOf('用户名') > -1) {
+                        $('.register-form .group-inputs .name .msg').css('display', 'block');
+                    } else if (msg.indexOf('密码') > -1) {
+                        $('.register-form .group-inputs .password .msg').css('display', 'block');
+                    } else if (msg.indexOf('邮箱') > -1) {
+                        $('.register-form .group-inputs .email .msg').css('display', 'block');
+                    } else if (msg.indexOf('验证码') > -1) {
+                        $('.register-form .group-inputs .captcha-module .msg').css('display', 'block');
+                    } else if (msg.indexOf('服务器') > -1) {
+                        $('.register-form .group-inputs .name .msg').css('display', 'block');
+                    }
+                }else if(index == 1) {
+                    $('.view-login').css('display','block');
+                    $('.view-register').css('display','none');
+                    $('.navs-slider').attr("data-active-index", 1);
+                    if (msg.indexOf('账号') > -1) {
+                        $('.login-form .group-inputs .account .msg').css('display', 'block');
+                    } else if (msg.indexOf('密码') > -1) {
+                        $('.login-form .group-inputs .verification .msg').css('display', 'block');
+                    } else if (msg.indexOf('验证码') > -1) {
+                        $('.login-form .group-inputs .captcha-module .msg').css('display', 'block');
+                    } else if (msg.indexOf('服务器') > -1) {
+                        $('.login-form .group-inputs .account .msg').css('display', 'block');
+                    }
+                }
+            });
+
+        </script>
+</body>
+</html>

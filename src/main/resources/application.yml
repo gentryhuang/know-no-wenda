@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: know-no-wenda
+  profiles:
+    include: datasource,management
+    monitor:
+      path: know-no-wenda
+  mvc:
+    throw-exception-if-no-handler-found: true
+    favicon:
+      enabled: false # 关闭SpringBoot 的logo
+  aop:
+    auto:  true
+    proxy-target-class:  false
+mybatis:
+  mapper-locations: "classpath*:/mapper/**/*Mapper.xml"
+  config-location: "classpath:config/mybatis-config.xml"
+  type-aliases-package: com.know.wenda.domain
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
+
+logging:
+  config: classpath:knw-logback.xml  # 默认日志文件 logback-spring.xml
+  path: /opt/logs/spring-boot/know-no-wenda        #springboot服务的日志目录
+  level:
+    root: INFO
+    com.knownowenda.know-no-wenda: INFO # 指定know-no-wenda下的所有日志级别是info
+  #path: F:/opt/logs/spring-boot/know-no-wenda # logging.path Spring环境变量被传送到LOG_PATH环境变量，并且日志文件被放置在正确的位置
+
+
+
+server:
+  #servlet-path: /know-no-wenda
+  port: 80
+
+
+
+

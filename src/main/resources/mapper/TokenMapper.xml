@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.know.wenda.dao.mapper.TokenMapper">
+
+    <!-- 创建数据库与实体类字段对应关系 -->
+    <resultMap id="BaseResultMap" type="com.know.wenda.domain.TokenDO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="expired" property="expired"/>
+        <result column="token" property="token"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="is_valid" property="isValid"/>
+        <result column="last_ver" property="lastVer"/>
+    </resultMap>
+
+    <!-- 公共基础SQL -->
+    <sql id="Base_Column_List">
+			id ,
+		    user_id,
+			expired,
+			token,
+			create_date ,
+			update_date ,
+			is_valid,
+			last_ver
+    </sql>
+
+    <sql id="Base_Column_List_except_id">
+            user_id,
+			expired,
+			token,
+			create_date ,
+			update_date ,
+			is_valid,
+			last_ver
+    </sql>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="TokenDO" useGeneratedKeys="true" keyProperty="id">
+        insert into token(
+        <include refid="Base_Column_List_except_id"/>
+        ) values(
+        #{userId} ,
+        #{expired},
+        #{token},
+        #{createDate} ,
+        #{updateDate} ,
+        #{isValid},
+        #{lastVer}
+        )
+    </insert>
+    <!-- 根据主键id查询-->
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from token
+        where id=#{id}
+        and is_valid = 1
+    </select>
+
+    <select id="findTokenList"  resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from token
+        where is_valid = 1
+    </select>
+
+    <!--根据token查询-->
+    <select id="findByToken" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from token
+        where token=#{token}
+        and is_valid = 1
+    </select>
+
+    <!-- 软删除实体 -->
+    <update id="delete" parameterType="java.lang.String">
+        update token
+        set is_valid = 0
+        where token=#{token}
+    </update>
+
+    <!-- 定期清理无用token -->
+    <update id="cleanTokens" parameterType="java.util.List">
+        update token
+        set is_valid = 0
+        where id in
+        <foreach collection="tokenIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

@@ -1,0 +1,58 @@
+#parse("header.html")
+<link rel="stylesheet" href="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/styles/result.css">
+<link rel="stylesheet" href="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/styles/detail.css">
+    <div id="main">
+        <div class="zg-wrap zu-main clearfix ">
+            <div class="zm-profile-section-wrap zm-profile-followee-page">
+                <div class="zm-profile-section-head">
+                    <span class="zm-profile-section-name">
+                        <a href="/user/${curUser.id}">${curUser.name}</a> 关注了 ${followeeCount} 人
+                    </span>
+                </div>
+                <div class="zm-profile-section-list">
+                    <div id="zh-profile-follows-list">
+                        <div class="zh-general-list clearfix">
+                            #foreach($vo in $followees)
+                               <div class="zm-profile-card zm-profile-section-item zg-clear no-hovercard">
+                                   #if($vo.followed && $vo.userDO.id != $curUser.id)
+                                   <div class="zg-right">
+                                      <button class="zg-btn zg-btn-unfollow zm-rich-follow-btn small nth-0
+                                    js-follow-user" data-status="1" data-id="$vo.userDO.id">取消关注</button>
+                                   </div>
+                                  #elseif($vo.userDO.id != $curUser.id)
+                                  <div class="zg-right">
+                                    <button class="zg-btn zg-btn-follow zm-rich-follow-btn small nth-0
+                                    js-follow-user" data-id="$vo.userDO.id">关注</button>
+                                  </div>
+                                   #else
+                                  #end
+                                <a title="Barty" class="zm-item-link-avatar" href="/user/${vo.userDO.id}">
+                                    <img src="${vo.userDO.headUrl}" class="zm-item-img-avatar">
+                                </a>
+                                <div class="zm-list-content-medium">
+                                    <h2 class="zm-list-content-title"><a data-tip="p$t$buaabarty" href="/user/${vo.userDO.id}" class="zg-link" title="Barty">${vo.userDO.name}</a></h2>
+
+                                    <div class="details zg-gray">
+                                        <a target="_blank" href="/user/${vo.userDO.id}/followers" class="zg-link-gray-normal">${vo.followerCount}粉丝</a>
+                                        /
+                                        <a target="_blank" href="/user/${vo.userDO.id}/followees" class="zg-link-gray-normal">${vo.followeeCount}关注</a>
+                                        /
+                                        <a target="_blank" href="/answer/${vo.userDO.id}" class="zg-link-gray-normal">${vo.commentCount} 回答</a>
+                                    </div>
+                                </div>
+                            </div>
+                            #end
+                        </div>
+
+                        #if($!followeeCount && $followeeCount>5 && $followees.size() < $followeeCount)
+                        <a href="/user/${curUser.id}/followees?num=${num}" aria-role="button" class="zg-btn-white zu-button-more" target="_self">更多</a>
+                        #else
+                        #end
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+#parse("common.html")
+<script type="text/javascript" src="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/scripts/follow.js"></script>
+#parse("footer.html")3

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.know.wenda.dao.mapper.UserMapper">
+
+    <!-- 创建数据库与实体类字段对应关系 -->
+    <resultMap id="BaseResultMap" type="com.know.wenda.domain.UserDO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="email" property="email"/>
+        <result column="password" property="password"/>
+        <result column="salt" property="salt"/>
+        <result column="head_url" property="headUrl"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="is_valid" property="isValid"/>
+        <result column="last_ver" property="lastVer"/>
+    </resultMap>
+
+    <!-- 公共基础SQL -->
+    <sql id="Base_Column_List">
+			id ,
+		    name,
+		    email,
+			password,
+			salt ,
+			head_url ,
+			create_date ,
+			update_date ,
+			is_valid,
+			last_ver
+    </sql>
+
+    <!-- 插入 -->
+    <sql id="Base_Column_List_except_id">
+		    name,
+		    email,
+			password,
+			salt ,
+			head_url ,
+			create_date ,
+			update_date ,
+			is_valid,
+			last_ver
+    </sql>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="UserDO"  useGeneratedKeys="true" keyProperty="id">
+        insert into user(
+        <include refid="Base_Column_List_except_id"/>
+        ) values(
+        #{name} ,
+        #{email},
+        #{password} ,
+        #{salt} ,
+        #{headUrl} ,
+        #{createDate} ,
+        #{updateDate} ,
+        #{isValid},
+        #{lastVer}
+        )
+    </insert>
+
+    <!-- 根据主键id查询-->
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where id=#{id}
+        and is_valid = 1
+    </select>
+
+    <!-- 根据账号查询 -->
+    <select id="findByAccount" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where (name=#{account} or email = #{account})
+        and is_valid = 1
+    </select>
+
+    <!-- 根据姓名查询 -->
+    <select id="findByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where name=#{name}
+        and is_valid = 1
+    </select>
+    <!-- 根据邮箱查询 -->
+    <select id="findByEmail" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where email=#{email}
+        and is_valid = 1
+    </select>
+
+
+    <!-- 根据邮箱重置密码 -->
+    <update id="resetPassword" parameterType="java.util.Map">
+        update user
+        <set>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            last_ver = last_ver + 1
+        </set>
+        where email=#{email} and is_valid = 1
+    </update>
+
+
+    <!-- 修改 -->
+    <update id="updateStatus" parameterType="java.util.Map">
+        update user
+        <set>
+            <if test="password != null">
+                password = #{password},
+            </if>
+
+            <if test="createDate != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateDate != null">
+                op_time = #{opTime},
+            </if>
+            <if test="isValid != null">
+                is_valid = #{isValid},
+            </if>
+            last_ver = last_ver + 1
+        </set>
+        where id=#{id} and is_valid = 1
+    </update>
+
+    <!-- 软删除实体 -->
+    <update id="delete" parameterType="java.lang.Integer">
+        update user
+        set is_valid = 0
+        where id=#{id}
+    </update>
+
+    <!-- 修改用户信息 -->
+    <update id="update" parameterType="UserDO">
+        update user
+        <set>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="headUrl != null">
+                head_url=#{headUrl},
+            </if>
+            last_ver = last_ver + 1
+        </set>
+        where id=#{id} and is_valid = 1
+    </update>
+
+</mapper>

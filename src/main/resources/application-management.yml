@@ -1,0 +1,6 @@
+# 链路监控
+management:
+  context-path: /know-no-wenda
+  port: 8088
+  security:
+    enabled: false

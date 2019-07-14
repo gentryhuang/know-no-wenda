@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.know.wenda.dao.mapper.FeedMapper">
+
+    <!-- 创建数据库与实体类字段对应关系 -->
+    <resultMap id="BaseResultMap" type="com.know.wenda.domain.FeedDO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="data" property="data"/>
+        <result column="type" property="type"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="is_valid" property="isValid"/>
+        <result column="last_ver" property="lastVer"/>
+    </resultMap>
+
+    <!-- 公共基础SQL -->
+    <sql id="Base_Column_List">
+			id ,
+		    user_id,
+			data,
+			type,
+			create_date ,
+			update_date ,
+			is_valid,
+			last_ver
+    </sql>
+
+    <sql id="Base_Column_List_except_id">
+            user_id,
+			data,
+			type,
+			create_date ,
+			update_date ,
+			is_valid,
+			last_ver
+    </sql>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="FeedDO" useGeneratedKeys="true" keyProperty="id">
+        insert into feed(
+        <include refid="Base_Column_List_except_id"/>
+        ) values(
+        #{userId} ,
+        #{data} ,
+        #{type},
+        #{createDate} ,
+        #{updateDate} ,
+        #{isValid},
+        #{lastVer}
+        )
+    </insert>
+    <!-- 根据主键id查询-->
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from feed
+        where id=#{id}
+        and is_valid = 1
+    </select>
+
+    <select id="selectUserFeeds" resultType="com.know.wenda.domain.FeedDO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM feed
+        WHERE id &lt; #{maxId}
+        <if test="userIds !=null and userIds.size() != 0">
+            AND user_id in
+            <foreach item="item" index="index" collection="userIds"
+                     open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY id DESC
+        LIMIT #{count}
+    </select>
+
+    <!-- 获取当前用户感兴趣的新鲜事条数（关注的人干的事） userIds要保证不能为空-->
+    <select id="findFeedCount" resultType="java.lang.Integer">
+        SELECT count(id)
+        FROM feed
+        <where>
+            user_id in
+            <if test="userIds !=null and userIds.size() != 0">
+                <foreach item="id" index="index" collection="userIds"
+                         open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            and is_valid = 1
+        </where>
+    </select>
+
+
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.know.wenda.dao.mapper.QuestionMapper">
+
+    <!-- 创建数据库与实体类字段对应关系 -->
+    <resultMap id="BaseResultMap" type="com.know.wenda.domain.QuestionDO">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="user_id" property="userId"/>
+        <result column="comment_count" property="commentCount"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="is_valid" property="isValid"/>
+        <result column="last_ver" property="lastVer"/>
+    </resultMap>
+
+    <!-- 公共基础SQL -->
+    <sql id="Base_Column_List">
+			id ,
+			title,
+			content,
+		    user_id,
+			comment_count,
+			create_date ,
+			update_date ,
+			is_valid,
+			last_ver
+    </sql>
+
+    <sql id="Base_Column_List_except_id">
+            title,
+			content,
+		    user_id,
+			comment_count,
+			create_date ,
+			update_date ,
+			is_valid,
+			last_ver
+    </sql>
+
+    <!-- 新增 -->
+    <insert id="addQuestion" parameterType="QuestionDO" useGeneratedKeys="true" keyProperty="id">
+        insert into question(
+        <include refid="Base_Column_List_except_id"/>
+        ) values(
+        #{title} ,
+        #{content} ,
+        #{userId} ,
+        #{commentCount},
+        #{createDate} ,
+        #{updateDate} ,
+        #{isValid},
+        #{lastVer}
+        )
+    </insert>
+    <!-- 根据主键id查询-->
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from question
+        where id=#{id}
+        and is_valid = 1
+    </select>
+
+    <!-- 查询question有多少条-->
+    <select id="getQuestionCount" resultType="java.lang.Integer">
+        select count(id)
+        from question
+        where is_valid = 1
+    </select>
+    <!-- 根据用户id查询对应的问题数 -->
+    <select id="getQuestionCountByUserId" resultType="java.lang.Integer">
+        select count(question.id)
+        from question join user on user_id = user.id
+        where question.is_valid = 1 and user_id = #{userId} and user.is_valid = 1
+    </select>
+
+   <!-- 查询最新的n条问题 如果没有userId就查找所有的问题，如果有userId就查找对应用户的问题-->
+    <select id="selectLatestQuestions" resultType="QuestionDO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        question
+        <where>
+            <if test="userId != 0">
+                user_id = #{userId} and
+            </if>
+            is_valid = 1
+        </where>
+        ORDER BY id DESC
+        LIMIT #{offset},#{limit}
+    </select>
+
+
+    <!-- 修改 -->
+    <update id="updateCommentCount" parameterType="java.util.Map">
+        update
+        question
+        <set>
+            <if test="count != null">
+                comment_count = #{count},
+            </if>
+            last_ver = last_ver + 1
+        </set>
+        where id=#{id} and is_valid = 1
+    </update>
+
+    <!-- 软删除实体 -->
+    <update id="deleteQuestionById" parameterType="java.lang.Integer">
+        update question
+        set is_valid = 0
+        where id=#{id}
+    </update>
+
+</mapper>

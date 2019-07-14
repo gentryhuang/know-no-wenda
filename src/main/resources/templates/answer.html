@@ -1,0 +1,97 @@
+#parse("header.html")
+<link rel="stylesheet" href="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/styles/detail.css">
+<link rel="stylesheet" href="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/styles/result.css">
+<script type="text/javascript" async="" src="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/scripts/za-0.1.1.min.js"></script>
+<script async="" src="https://ssl.google-analytics.com/ga.js"></script>
+<script src="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/scripts/instant.e7a17de6.js"></script>
+
+<div id="main">
+    <div class="zg-wrap zu-main clearfix ">
+        <div class="zm-profile-section-wrap zm-profile-followee-page">
+            <div class="zm-profile-section-head">
+                    <span class="zm-profile-section-name">
+                        <a href="/user/${curUser.id}">${curUser.name}</a>回答了$!{answerNum}问题
+                    </span>
+            </div>
+            <div style="padding: 20px">
+                <!-- 遍历问题 -->
+                #foreach($answer in $answers)
+                <!-- 对应的问题以及用户的评论-->
+                <div id="zh-question-title" data-editable="true" class="zm-editable-status-normal" style="padding-top: 10px">
+                    <h3 class="zm-item-title">
+                       <a href="/question/${answer.questionDO.id}"></a> <span class="zm-editable-content">$!{answer.questionDO.title}</span>
+                    </h3>
+                </div>
+                <div id="zh-question-detail" class="zm-item-rich-text zm-editable-status-normal" style="padding:2px 0 10px 0px">
+                    <div class="zm-editable-content">$!{answer.questionDO.content}</div>
+                </div>
+                <div id="zh-question-answer-wrap" data-pagesize="10" class="zh-question-answer-wrapper navigable"
+                     data-widget="navigable" data-navigable-options="{&quot;items&quot;: &quot;&gt;.zm-item-answer&quot;}"
+                     data-init="{&quot;params&quot;: {&quot;url_token&quot;: 36301524, &quot;pagesize&quot;: 10, &quot;offset&quot;: 0}, &quot;nodename&quot;: &quot;QuestionAnswerListV2&quot;}">
+                    #foreach($comment in $answer.comments)
+                    <div class="zm-item-answer  zm-item-expanded js-comment">
+                        <link itemprop="url" href="">
+                        <meta itemprop="answer-id" content="22162611">
+                        <meta itemprop="answer-url-token" content="66862039">
+                        <a class="zg-anchor-hidden" name="answer-22162611"></a>
+                        <div class="zm-votebar goog-scrollfloater js-vote" data-id="$!{comment.comment.id}">
+                            #if($comment.liked > 0)
+                            <button class="up js-like pressed" title="赞同">
+                                #else
+                                <button class="up js-like" title="赞同">
+                                    #end
+                                    <i class="icon vote-arrow"></i>
+                                    <span class="count js-voteCount">$!{comment.likeCount}</span>
+                                    <span class="label sr-only">赞同</span>
+                                </button>
+                                #if($comment.liked < 0)
+                                <button class="down js-dislike pressed" title="反对，不会显示你的姓名">
+                                    #else
+                                    <button class="down js-dislike" title="反对，不会显示你的姓名">
+                                        #end
+                                        <i class="icon vote-arrow"></i>
+                                        <span class="label sr-only">反对，不会显示你的姓名</span>
+                                    </button>
+                        </div>
+                        <div class="answer-head">
+                            <div class="zm-item-answer-author-info">
+                                <a class="zm-item-link-avatar avatar-link" href="/user/$!{comment.userDO.id}" target="_blank" data-tip="p$t$yingxiaodao">
+                                    <img src="${comment.userDO.headUrl}" class="zm-list-avatar avatar"></a>
+                                <a class="author-link" data-tip="p$t$yingxiaodao" target="_blank" href="">${comment.userDO.name}</a>
+                            </div>
+                            <div class="zm-item-vote-info">
+                                <span class="voters text">
+                                    <a href="" class="more text"><span class="js-voteCount">$!{comment.likeCount}</span>&nbsp;人赞同</a>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="zm-item-rich-text expandable js-collapse-body" data-resourceid="6727688" data-action="/answer/content" data-author-name="营销岛" data-entry-url="/question/36301524/answer/66862039">
+
+                            <div class="zm-editable-content clearfix">
+                                $comment.comment.content
+                            </div>
+                        </div>
+                        <a class="zg-anchor-hidden ac" name="22162611-comment"></a>
+                        <div class="zm-item-meta answer-actions clearfix js-contentActions">
+                            <div class="zm-meta-panel">
+                                <a itemprop="url" class="answer-data-link meta-item" target="_blank" href="">发布于 $date.format('yyyy-MM-dd HH:mm:ss', $comment.comment.createDate)</a>
+                            </div>
+                        </div>
+                    </div>
+                    #end
+                </div>
+                <a name="draft"></a>
+                #end
+            </div>
+            #if(($num < $questionNum))
+            <a href="/answer/${curUser.id}?num=${num}" aria-role="button" class="zg-btn-white zu-button-more" target="_self">更多</a>
+            #else
+            #end
+            </div>
+    </div>
+</div>
+
+#parse("common.html")
+<script type="text/javascript" src="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/scripts/detail.js"></script>
+<script type="text/javascript" src="https://static-resourcess.oss-cn-hangzhou.aliyuncs.com/scripts/follow.js"></script>
+#parse("footer.html")

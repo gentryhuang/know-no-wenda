@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.know.wenda.dao.mapper.CommentMapper">
+
+    <!-- 创建数据库与实体类字段对应关系 -->
+    <resultMap id="BaseResultMap" type="com.know.wenda.domain.CommentDO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="content" property="content"/>
+        <result column="entity_id" property="entityId"/>
+        <result column="entity_type" property="entityType"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="is_valid" property="isValid"/>
+        <result column="last_ver" property="lastVer"/>
+    </resultMap>
+
+    <!-- 公共基础SQL -->
+    <sql id="Base_Column_List">
+			id ,
+		    user_id,
+			content,
+			entity_id ,
+			entity_type ,
+			create_date ,
+			update_date ,
+			is_valid,
+			last_ver
+    </sql>
+
+    <sql id="Base_Column_List_except_id">
+		    user_id,
+			content,
+			entity_id ,
+			entity_type ,
+			create_date ,
+			update_date ,
+			is_valid,
+			last_ver
+    </sql>
+
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="CommentDO" useGeneratedKeys="true" keyProperty="id">
+        insert into comment(
+        <include refid="Base_Column_List_except_id"/>
+        ) values(
+        #{userId} ,
+        #{content} ,
+        #{entityId} ,
+        #{entityType} ,
+        #{createDate} ,
+        #{updateDate} ,
+        #{isValid},
+        #{lastVer}
+        )
+    </insert>
+    <!-- 根据主键id查询-->
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from comment
+        where id=#{id}
+        and is_valid = 1
+    </select>
+
+    <!--根据entity查询-->
+    <select id="findByEntity" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select
+        <include refid="Base_Column_List"/>
+        from comment
+        where entity_id=#{entityId} and entity_type=#{entityType}
+        and is_valid = 1
+        order by create_date desc
+    </select>
+
+    <!--查询数量-->
+    <select id="findCommentCountByEntity" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select
+        count(id)
+        from comment
+        where entity_id=#{entityId} and entity_type=#{entityType}
+        and is_valid = 1
+    </select>
+
+    <!--查询数量-->
+    <select id="findCommentCountByUser" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select
+        count(id)
+        from comment
+        where user_id=#{userId}
+        and is_valid = 1
+    </select>
+
+    <!-- 根据用户id获取问题的评论数 -->
+    <select id="findQuestionCommentCountByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment
+        where user_id=#{userId} and entity_type = #{entityType} and is_valid = 1
+    </select>
+
+    <!-- 根据用户id查询对应的评论列表 -->
+    <select id="findCommentByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment
+        where user_id = #{userId} and entity_type = #{entityType} and is_valid = 1
+        limit #{num}
+    </select>
+
+
+    <!-- 软删除实体 -->
+    <update id="delete" parameterType="java.lang.Integer">
+        update commment
+        set is_valid = 0
+        where id=#{commentId}
+    </update>
+
+</mapper>
