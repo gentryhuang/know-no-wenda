@@ -6,9 +6,12 @@ spring:
     monitor:
       path: know-no-wenda
   mvc:
+    date-format: yyyy-MM-dd HH:mm:ss
     throw-exception-if-no-handler-found: true
     favicon:
       enabled: false # 关闭SpringBoot 的logo
+  resources:
+    add-mappings: false
   aop:
     auto:  true
     proxy-target-class:  false
@@ -25,11 +28,11 @@ pagehelper:
 
 
 logging:
-  config: classpath:knw-logback.xml  # 默认日志文件 logback-spring.xml
+  config: classpath:knw-logback.xml  # 指定日志文件 logback-spring.xml
   path: /opt/logs/spring-boot/know-no-wenda        #springboot服务的日志目录
   level:
     root: INFO
-    com.knownowenda.know-no-wenda: INFO # 指定know-no-wenda下的所有日志级别是info
+    com.know.wenda: INFO # 指定know-no-wenda下的所有日志级别是info
   #path: F:/opt/logs/spring-boot/know-no-wenda # logging.path Spring环境变量被传送到LOG_PATH环境变量，并且日志文件被放置在正确的位置
 
 
@@ -38,6 +41,31 @@ server:
   #servlet-path: /know-no-wenda
   port: 80
 
+---
+
+spring:
+  profiles:
+    active: dev
 
 
+---
+spring:
+  profiles: daily
 
+
+# 环境对应的配置
+
+---
+spring:
+     profiles: pre
+
+# 环境对应的配置
+
+---
+spring:
+     profiles: publish
+
+logging:
+  level:
+    root: INFO
+    com.know.wenda: INFO
